@@ -1,0 +1,5 @@
+qiskit>=1.0
+qiskit-aer>=0.14
+networkx>=3.0
+numpy>=1.24
+matplotlib>=3.7
