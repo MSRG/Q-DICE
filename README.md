@@ -140,12 +140,6 @@ fidelity/success-rate figure the notebook produces should be read as this
 codebase's own simulated output under a realistic noise regime — not as a
 validation against, or reproduction of, the originally published results.
 
-Regenerate the notebook with:
-
-```bash
-python build_notebook.py
-jupyter nbconvert --to notebook --execute --inplace notebooks/results_demo.ipynb
-```
 
 ## Testing
 
