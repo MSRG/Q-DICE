@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
-    { name = "Your Name Here" }
+    { name = "Michael Silver, Zachary Vernec, Hans-Arno Jacobsen" }
 ]
 keywords = [
     "quantum computing",
@@ -42,8 +42,8 @@ notebooks = ["jupyter>=1.0", "nbformat>=5.9", "nbconvert>=7.0", "ipykernel>=6.0"
 dev = ["pytest>=7.4", "pytest-cov>=4.1"]
 
 [project.urls]
-Repository = "https://github.com/your-org/qdice-emulator"
-Issues = "https://github.com/your-org/qdice-emulator/issues"
+Repository = "https://github.com/MSRG/Q-DICE"
+Issues = "https://github.com/MSRG/Q-DICE/issues"
 
 [tool.setuptools.packages.find]
 include = ["qdice*"]
