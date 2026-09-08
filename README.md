@@ -1,21 +1,11 @@
 # qdice-emulator
 
-[![tests](https://github.com/your-org/qdice-emulator/actions/workflows/tests.yml/badge.svg)](https://github.com/your-org/qdice-emulator/actions/workflows/tests.yml)
+[![tests](https://github.com/MSRG/Q-DICE/actions/workflows/tests.yml/badge.svg)](https://github.com/MSRG/Q-DICE/actions/workflows/tests.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
 
-A clean, from-scratch implementation of the **methodology** behind Q-DICE
-(Quantum Distributed Interconnect Compiler and Emulator): a hardware-aware
-emulation layer that turns monolithic quantum backends into distributed
-multi-QPU systems, injects physically motivated nonlocal-link noise, and
-maps circuits onto those systems while respecting virtual QPU boundaries.
+Q-DICE (Quantum Distributed Interconnect Compiler and Emulator): a hardware-aware emulation layer that turns monolithic quantum backends into distributed multi-QPU systems, injects physically motivated nonlocal-link noise, and maps circuits onto those systems while respecting virtual QPU boundaries.
 
-This repository implements the *mechanisms* described in the methodology
-section of the Q-DICE paper (QPU slicing/stitching, nonlocal noise models,
-boundary-aware mapping). It does **not** claim to reproduce any of the
-paper's specific experiments or reported numerical results — see
-[Notebooks](#notebooks) below for how published reference parameters are
-used here, and why.
 
 ## Features
 
