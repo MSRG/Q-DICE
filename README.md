@@ -13,8 +13,7 @@ Q-DICE (Quantum Distributed Interconnect Compiler and Emulator): a hardware-awar
   virtual QPUs for hardware-mode distributed execution.
 - **QPU stitching** — compose independently defined QPU topologies into a
   larger distributed backend for classical simulation.
-- **Nonlocal link noise models** — Hamiltonian-mediated (amplitude damping
-  + dephasing, from T1/T2/link duration) and entanglement-mediated
+- **Nonlocal link noise models** — Hamiltonian-mediated (amplitude damping  + dephasing, from T1/T2/link duration) and entanglement-mediated
   (two-qubit depolarizing, from a link error probability) noise channels,
   plus their hardware-mode analogues (idle-delay insertion and Monte Carlo
   Pauli twirling).
