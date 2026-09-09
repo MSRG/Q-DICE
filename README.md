@@ -4,7 +4,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
 
-Q-DICE (Quantum Distributed Interconnect Compiler and Emulator): a hardware-aware emulation layer that turns monolithic quantum backends into distributed multi-QPU systems, injects physically motivated nonlocal-link noise, and maps circuits onto those systems while respecting virtual QPU boundaries. Take a look at the original whitepaper [here](https://arxiv.org/abs/2606.11340).
+Q-DICE (Quantum Distributed Interconnect Compiler and Emulator): a hardware-aware emulation layer that turns monolithic quantum backends into distributed multi-QPU systems, injects physically motivated nonlocal-link noise, and maps circuits onto those systems while respecting virtual QPU boundaries. Take a look at the original whitepaper [here](https://arxiv.org/abs/2606.11340). 
+
+Problems or questions? Email the author [Email the author](mailto:m.silver@mail.utoronto.ca).
 
 
 ## Features
