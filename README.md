@@ -157,7 +157,7 @@ unit conversion and lookup.
 
 ## Publications
 
-M. Silver, Z. Vernec, and H.-A. Jacobsen, “Q-DICE: Quantum distributed interconnect compiler and emulator,” *arXiv preprint*, arXiv:2606.11340, 2026. DOI: 10.48550/arXiv.2606.11340. [alphaXiv](https://arxiv.org/abs/2606.11340)
+M. Silver, Z. Vernec, and H.-A. Jacobsen, “Q-DICE: Quantum distributed interconnect compiler and emulator,” *arXiv preprint*, arXiv:2606.11340, 2026. DOI: 10.48550/arXiv.2606.11340. [arXiv](https://arxiv.org/abs/2606.11340)
 
 ## License
 [MIT](LICENSE)
