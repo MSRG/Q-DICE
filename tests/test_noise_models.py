@@ -61,6 +61,24 @@ def test_build_density_matrix_noise_model_attaches_expected_edges():
     assert "cx" in noisy_instructions
 
 
+def test_build_density_matrix_noise_model_covers_both_gate_orientations():
+    h_params = HamiltonianLinkParams(t1_us=60.0, t2_us=40.0, t_link_ns=100.0)
+    e_params = EntanglementLinkParams(link_error_probability=0.1, t_link_ns=0.0)
+    noise_model = build_density_matrix_noise_model(
+        hamiltonian_edges=[((0, 1), h_params)],
+        entanglement_edges=[((2, 3), e_params)],
+        nonlocal_gate_name="cx",
+    )
+    noisy_qubits = {
+        tuple(qubits)
+        for error in noise_model.to_dict()["errors"]
+        for qubits in error["gate_qubits"]
+    }
+    # A cx with control and target swapped crosses the same physical link
+    # and must pick up the same channel.
+    assert {(0, 1), (1, 0), (2, 3), (3, 2)} <= noisy_qubits
+
+
 def test_hardware_delay_duration_is_nonnegative_and_correct():
     assert hardware_delay_duration(t_link_ns=500, t_local_gate_ns=200) == 300
     # Should never go negative even if the local gate already exceeds the
