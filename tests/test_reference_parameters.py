@@ -28,8 +28,15 @@ def test_entanglement_reference_carries_error_probability():
 def test_entanglement_reference_with_unspecified_link_time_defaults_to_zero():
     # Main_et_al does not fix a numeric t_link in the source material.
     params = get_reference_link_params("Main_et_al")
-    assert params.link_error_probability == pytest.approx(0.14)
+    assert params.link_error_probability == pytest.approx(0.038)
     assert params.t_link_ns == pytest.approx(0.0)
+
+
+def test_main_et_al_entry_matches_measured_remote_pair_fidelity():
+    entry = REFERENCE_NOISE_PARAMETERS["Main_et_al"]
+    # Two-qubit depolarizing link: Bell-pair fidelity 1 - 3p/4 = 0.9715.
+    assert 1 - 0.75 * entry["p"] == pytest.approx(0.9715, abs=1e-3)
+    assert "T1" in entry and "T2" in entry
 
 
 def test_t_link_override_is_respected():

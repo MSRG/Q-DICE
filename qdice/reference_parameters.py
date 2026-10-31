@@ -38,9 +38,23 @@ REFERENCE_NOISE_PARAMETERS: Dict[str, Dict] = {
         "t_link": 2e-6,  # 2 microseconds
     },
     "Main_et_al": {
+        # Main et al., Nature 638, 383 (2025), arXiv:2407.00835. The remote
+        # network-qubit pair is measured at F = 0.9715(9) to |Psi+>. For
+        # the two-qubit depolarizing link E(rho) = (1 - p) rho + p I/4 a
+        # Bell pair has fidelity 1 - 3p/4, so p = 4 (1 - F) / 3. The 86%
+        # figure in that paper is the average fidelity of the complete
+        # teleported CZ gate (local gates, mid-circuit measurement,
+        # feed-forward, and memory included), not a link fidelity; using it
+        # as p puts the simulated pair at 0.895.
         "link_type": "Entanglement-Mediated",
-        "p": 0.14,       # derived from an 86% reported process fidelity
+        "p": 0.038,
         "t_link": None,  # full teleportation-protocol duration; not fixed here
+                         # (mean time to herald a remote pair: 103 ms)
+        "T1": float("inf"),  # 43Ca+ hyperfine circuit qubit: no radiative decay
+        "T2": 100e-3,        # circuit-qubit coherence time, ~100 ms; the
+                             # experiment adds Knill dynamical decoupling, and
+                             # the memory operation over the herald wait is
+                             # 98.1(4)% / 98.2(5)% faithful on the two nodes
     },
     "Iuliano_et_al": {
         "link_type": "Entanglement-Mediated",
