@@ -156,7 +156,8 @@ def build_density_matrix_noise_model(
 
     Returns
     -------
-    A `NoiseModel` with one quantum error entry per nonlocal edge.
+    A `NoiseModel` with one quantum error entry per nonlocal edge and gate
+    orientation.
     """
     noise_model = NoiseModel()
 
@@ -167,13 +168,19 @@ def build_density_matrix_noise_model(
         # error attached to that specific (qubit_a, qubit_b) gate instance.
         single_qubit_channel = amp_damp.compose(phase_damp)
         two_qubit_channel = single_qubit_channel.tensor(single_qubit_channel)
-        noise_model.add_quantum_error(
-            two_qubit_channel, nonlocal_gate_name, [q_a, q_b]
-        )
+        # Aer matches a local error on the ordered qubit tuple, so register
+        # the (symmetric) channel for both orientations of the gate across
+        # the link; otherwise a gate with control and target swapped runs
+        # noise-free.
+        for qubits in ((q_a, q_b), (q_b, q_a)):
+            noise_model.add_quantum_error(
+                two_qubit_channel, nonlocal_gate_name, list(qubits)
+            )
 
     for (q_a, q_b), params in entanglement_edges:
         channel = entanglement_link_kraus(params)
-        noise_model.add_quantum_error(channel, nonlocal_gate_name, [q_a, q_b])
+        for qubits in ((q_a, q_b), (q_b, q_a)):
+            noise_model.add_quantum_error(channel, nonlocal_gate_name, list(qubits))
 
     return noise_model
 
