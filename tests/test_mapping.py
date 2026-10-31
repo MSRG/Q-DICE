@@ -61,6 +61,26 @@ def test_mapped_circuit_never_uses_a_removed_edge():
             assert frozenset(qubits) in allowed_edges
 
 
+def test_mapping_keeps_qubits_that_have_no_link():
+    # Partition B is a single qubit with no coupling-map edge at all. It
+    # must still be a valid layout target for a purely local circuit.
+    qpu_a = QPUBackend(num_qubits=2, coupling_map=[(0, 1)])
+    qpu_b = QPUBackend(num_qubits=1, coupling_map=[])
+    backend = stitch_qpus({"A": qpu_a, "B": qpu_b}, stitch_links=[])
+
+    circuit = QuantumCircuit(3)
+    circuit.h(0)
+    circuit.cx(0, 1)
+    circuit.x(2)
+
+    result = distributed_aware_mapping(
+        circuit, backend, {0: "A", 1: "A", 2: "B"}, communication_ancillas={},
+        num_iterations=3, seed=0,
+    )
+    assert result.layout[2] == 2
+    assert result.circuit.num_qubits == backend.num_qubits
+
+
 def test_mapping_raises_when_no_valid_routing_exists():
     # Two partitions with *no* nonlocal link at all between them: the
     # restricted coupling map has two disconnected components, so any
