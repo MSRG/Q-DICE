@@ -26,20 +26,39 @@ def test_hamiltonian_link_kraus_reduces_to_identity_at_zero_link_time():
 
 def test_hamiltonian_link_kraus_matches_known_derivation():
     # Values reported for the Chou et al. Hamiltonian-mediated reference:
-    # T1 = 50us, T2 = 30us, t_link = 2us -> gamma ~= 0.039, lambda ~= 0.065.
+    # T1 = 50us, T2 = 30us, t_link = 2us -> gamma ~= 0.039.
     params = HamiltonianLinkParams(t1_us=50.0, t2_us=30.0, t_link_ns=2000.0)
     amp_damp, phase_damp = hamiltonian_link_kraus(params)
 
     gamma = 1 - np.exp(-2.0 / 50.0)
-    lam = 1 - np.exp(-2.0 / 30.0)
     assert gamma == pytest.approx(0.039, abs=1e-3)
-    assert lam == pytest.approx(0.065, abs=1e-3)
 
     # E1 (the off-diagonal, "decay" Kraus operator) should have
     # |E1[0,1]| = sqrt(gamma). It is identified as the operator with a
     # nonzero off-diagonal entry (E0 is diagonal for amplitude damping).
     e1_amp = [op for op in amp_damp.data if abs(op[0, 1]) > 1e-9][0]
     assert abs(e1_amp[0, 1]) == pytest.approx(np.sqrt(gamma), abs=1e-6)
+
+
+def test_hamiltonian_link_channel_decays_coherence_at_the_t2_rate():
+    from qiskit.quantum_info import DensityMatrix
+
+    # The composed channel must reproduce the T1/T2 relaxation model: the
+    # coherence of |+> decays as exp(-t/T2), the |1> population as
+    # exp(-t/T1). T2 << T1 makes a factor-of-two error in the exponent
+    # obvious.
+    params = HamiltonianLinkParams(t1_us=1000.0, t2_us=10.0, t_link_ns=10000.0)
+    amp_damp, phase_damp = hamiltonian_link_kraus(params)
+    channel = amp_damp.compose(phase_damp)
+    plus = DensityMatrix.from_label("+").evolve(channel)
+    one = DensityMatrix.from_label("1").evolve(channel)
+    assert 2 * abs(plus.data[0, 1]) == pytest.approx(np.exp(-10.0 / 10.0), abs=1e-9)
+    assert one.data[1, 1].real == pytest.approx(np.exp(-10.0 / 1000.0), abs=1e-9)
+
+
+def test_hamiltonian_link_kraus_rejects_t2_above_2_t1():
+    with pytest.raises(ValueError):
+        hamiltonian_link_kraus(HamiltonianLinkParams(t1_us=10.0, t2_us=30.0, t_link_ns=1.0))
 
 
 def test_entanglement_link_kraus_is_trace_preserving():

@@ -75,7 +75,14 @@ def hamiltonian_link_kraus(params: HamiltonianLinkParams) -> Tuple[Kraus, Kraus]
     decoherence model.
 
     Amplitude damping probability:  gamma = 1 - exp(-t_link / T1)
-    Dephasing probability:          lam   = 1 - exp(-t_link / T2)
+    Phase damping probability:      lam   = 1 - exp(-t_link (2 / T2 - 1 / T1))
+
+    The phase-damping parameter covers pure dephasing only. Phase damping
+    with parameter lam multiplies the coherence by sqrt(1 - lam), and the
+    amplitude damping already multiplies it by exp(-t_link / (2 T1)), so
+    this choice makes the composed channel decay the coherence as
+    exp(-t_link / T2) and the excited population as exp(-t_link / T1), the
+    usual T1/T2 relaxation model. It requires T2 <= 2 T1.
 
     Returns
     -------
@@ -83,9 +90,14 @@ def hamiltonian_link_kraus(params: HamiltonianLinkParams) -> Tuple[Kraus, Kraus]
     channels, meant to be applied to each communication-ancilla qubit
     involved in the nonlocal operation.
     """
+    if params.t2_us > 2 * params.t1_us:
+        raise ValueError(
+            f"T2 = {params.t2_us} us exceeds 2 T1 = {2 * params.t1_us} us; "
+            "no T1/T2 relaxation channel exists for these parameters"
+        )
     t_link_us = params.t_link_ns / 1000.0
     gamma = 1 - np.exp(-t_link_us / params.t1_us)
-    lam = 1 - np.exp(-t_link_us / params.t2_us)
+    lam = 1 - np.exp(-t_link_us * (2.0 / params.t2_us - 1.0 / params.t1_us))
 
     # Amplitude damping Kraus operators.
     e0_amp = np.array([[1, 0], [0, np.sqrt(1 - gamma)]])
