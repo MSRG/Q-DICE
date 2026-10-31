@@ -36,7 +36,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from qiskit import QuantumCircuit, transpile
-from qiskit.transpiler import CouplingMap
+from qiskit.transpiler import CouplingMap, TranspilerError
 
 from .qpu_backend import QPUBackend
 
@@ -103,7 +103,15 @@ def distributed_aware_mapping(
     iterations actually run.
     """
     rng = random.Random(seed)
-    restricted_coupling = CouplingMap(couplinglist=backend.restricted_coupling_map())
+    # Register every physical qubit before adding edges: a CouplingMap built
+    # from an edge list alone omits qubits that have no edge (a one-qubit
+    # QPU without a link, or a qubit whose only edge was sliced away), and
+    # the transpiler then rejects any layout that uses them.
+    restricted_coupling = CouplingMap()
+    for q in range(backend.num_qubits):
+        restricted_coupling.add_physical_qubit(q)
+    for q_a, q_b in backend.restricted_coupling_map():
+        restricted_coupling.add_edge(q_a, q_b)
 
     # Group virtual qubits by their home partition for per-partition random
     # assignment (Algorithm 1's inner loop over partitions).
@@ -115,6 +123,7 @@ def distributed_aware_mapping(
     best_circuit: Optional[QuantumCircuit] = None
     best_layout: Optional[Dict[int, int]] = None
     iterations_run = 0
+    last_error: Optional[TranspilerError] = None
 
     for _ in range(num_iterations):
         iterations_run += 1
@@ -164,9 +173,11 @@ def distributed_aware_mapping(
                 optimization_level=1,
                 seed_transpiler=rng.randint(0, 2**31 - 1),
             )
-        except Exception:
+        except TranspilerError as exc:
             # An unroutable random layout (e.g. no path within the
-            # restricted coupling map) simply loses this iteration.
+            # restricted coupling map) simply loses this iteration. Any
+            # other exception is a genuine error and propagates.
+            last_error = exc
             continue
 
         if candidate.depth() < best_depth:
@@ -179,7 +190,7 @@ def distributed_aware_mapping(
             "No valid layout found in the given number of iterations; "
             "consider increasing num_iterations or checking that the "
             "restricted coupling map admits a feasible routing."
-        )
+        ) from last_error
 
     return MappingResult(
         circuit=best_circuit,
